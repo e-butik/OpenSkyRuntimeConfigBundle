@@ -22,17 +22,27 @@ class OpenSkyRuntimeConfigExtension extends Extension
         $processor = new Processor();
         $config = $processor->processConfiguration(new Configuration(), $configs);
 
-        $container->setAlias('opensky.runtime_config.provider', $config['provider']);
+        $prototype = $container->getDefinition('opensky.runtime_config.parameter_bag_prototype');
 
-        if ($config['cascade']) {
-            $container->getDefinition('opensky.runtime_config')->addMethodCall('setContainer', array(new Reference('service_container')));
+        foreach ($config['parameter_bags'] as $id => $bag_config)
+        {
+            $bag_definition = clone $prototype;
+            $bag_definition->setAbstract(false);
+            $bag_definition->replaceArgument(0, new Reference($bag_config['provider']));
+            $bag_definition->setScope($bag_config['scope']);
+
+            if ($bag_config['cascade']) {
+                $bag_definition->addMethodCall('setContainer', array(new Reference('service_container')));
+            }
+
+            if ($bag_config['logging']['enabled']) {
+                $bag_definition->addArgument(new Reference('opensky.runtime_config.logger'));
+            }
+
+            $container->setDefinition($id, $bag_definition);
         }
 
-        $container->setParameter('opensky.runtime_config.logger.level', $config['logging']['level']);
-
-        if ($config['logging']['enabled']) {
-            $container->getDefinition('opensky.runtime_config')->addArgument(new Reference('opensky.runtime_config.logger'));
-        }
+//        $container->setParameter('opensky.runtime_config.logger.level', $config['logging']['level']);
     }
 
     /**

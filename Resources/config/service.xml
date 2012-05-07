@@ -11,9 +11,8 @@
     </parameters>
 
     <services>
-        <service id="opensky.runtime_config" class="%opensky.runtime_config.class%">
-            <argument type="service" id="opensky.runtime_config.provider" />
-            <argument type="service" id="opensky.runtime_config.logger" />
+        <service id="opensky.runtime_config.parameter_bag_prototype" class="%opensky.runtime_config.class%" abstract="true">
+            <argument /><!-- Provider -->
         </service>
 
         <service id="opensky.runtime_config.logger" class="%opensky.runtime_config.logger.class%" public="false">
@@ -22,10 +21,10 @@
             <tag name="monolog.logger" channel="opensky.runtime_config" />
         </service>
 
-        <service id="opensky.runtime_config.twig" class="%opensky.runtime_config.twig.class%">
+<!--        <service id="opensky.runtime_config.twig" class="%opensky.runtime_config.twig.class%">
             <argument type="service" id="opensky.runtime_config" />
             <tag name="twig.extension" />
-        </service>
+        </service>-->
     </services>
 
 </container>
